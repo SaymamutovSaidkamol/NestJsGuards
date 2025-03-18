@@ -13,4 +13,9 @@ export class CreateProductDto {
   @ApiProperty({ example: 'red' })
   @IsString()
   color: string;
+
+  
+  @ApiProperty({ example: '67d8e9e9102273465bb54fdf' })
+  @IsString()
+  category: string;
 }

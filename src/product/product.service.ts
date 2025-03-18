@@ -4,11 +4,13 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './entities/product.entity';
 import { Model } from 'mongoose';
+import { Category } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Product.name) private ProductModel: Model<Product>,
+    // private CategoryModel: Model<Category>,
   ) {}
   async create(data: CreateProductDto) {
     let newProd = await this.ProductModel.create(data);
@@ -16,12 +18,12 @@ export class ProductService {
   }
 
   async findAll() {
-    let data = await this.ProductModel.find();
+    let data = await this.ProductModel.find().populate('category');
     return { data };
   }
 
   async findOne(id: string) {
-    let data = await this.ProductModel.findById(id);
+    let data = await this.ProductModel.findById(id).populate('category');
 
     if (!data) {
       throw new NotFoundException('Product Not Found');
@@ -54,8 +56,8 @@ export class ProductService {
     return { data };
   }
 
-  async query(data: any){
-    let {name, price, color, page, limit, sortBy, order, ...filters} = data
+  async query(data: any) {
+    let { name, price, color, page, limit, sortBy, order, ...filters } = data;
 
     page = page || 1;
     limit = limit || 10;
@@ -83,6 +85,7 @@ export class ProductService {
         [sortBy]: order === 'asc' ? 1 : -1,
       })
       .skip(skip)
-      .limit(parseInt(limit, 10));
+      .limit(parseInt(limit, 10))
+      .populate('category');
   }
 }
